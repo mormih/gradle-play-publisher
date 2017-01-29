@@ -33,18 +33,20 @@ Please make sure to assign a valid signing configuration to your release build t
 
 ## Usage
 
+[![](https://jitpack.io/v/mormih/gradle-play-publisher.svg)](https://jitpack.io/#mormih/gradle-play-publisher)
+
 Add it to your buildscript dependencies:
 
 ```groovy
 buildscript {
 
     repositories {
-        maven { url 'https://maven.siruplab.com/public' }
+        // ...
+        maven { url 'https://jitpack.io' }
     }
-
     dependencies {
-    	// ...
-        classpath 'com.siruplab.gradle:play-publisher:1.1.6'
+        // ...
+        classpath 'com.github.mormih:gradle-play-publisher:1.2.0-beta2'
     }
 }
 ```
@@ -52,7 +54,7 @@ buildscript {
 Apply it:
 
 ```groovy
-apply plugin: 'com.siruplab.play'
+apply plugin: 'com.github.triplet.play'
 ```
 
 The plugin creates the following tasks for you:
