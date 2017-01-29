@@ -9,7 +9,7 @@ buildscript {
 }
 
 apply plugin: 'groovy'
-apply from: 'gradle-mvn-push.gradle'
+//apply from: 'gradle-mvn-push.gradle'
 
 group = GROUP
 version = VERSION_NAME
