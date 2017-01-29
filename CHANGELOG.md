@@ -1,3 +1,8 @@
+**1.1.6 - 2016-10-05**
+
+* Forked from https://github.com/Triple-T/gradle-play-publisher
+* Published under https://maven.siruplab.com/webapp/#/artifacts/browse/tree/General/public/com/siruplab/gradle/play-publisher
+
 **1.1.5 - 2016-08-09**
 
 * Support Filipino in Metadata - #142

@@ -1,11 +1,14 @@
 package de.triplet.gradle.play
 
 import com.android.build.gradle.api.ApkVariantOutput
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.AbstractInputStreamContent
 import com.google.api.client.http.FileContent
 import com.google.api.services.androidpublisher.model.Apk
 import com.google.api.services.androidpublisher.model.ApkListing
+import com.google.api.services.androidpublisher.model.ExpansionFile
 import com.google.api.services.androidpublisher.model.Track
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 class PlayPublishApkTask extends PlayPublishTask {
@@ -23,8 +26,8 @@ class PlayPublishApkTask extends PlayPublishTask {
         List<Integer> versionCodes = new ArrayList<Integer>()
 
         variant.outputs
-            .findAll { variantOutput -> variantOutput instanceof ApkVariantOutput }
-            .each { variantOutput -> versionCodes.add(publishApk(new FileContent(MIME_TYPE_APK, variantOutput.outputFile)).getVersionCode())}
+                .findAll { variantOutput -> variantOutput instanceof ApkVariantOutput }
+                .each { variantOutput -> versionCodes.add(publishApk(new FileContent(MIME_TYPE_APK, variantOutput.outputFile)).getVersionCode()) }
 
         Track track = new Track().setVersionCodes(versionCodes)
         if (extension.track?.equals("rollout")) {
@@ -46,12 +49,19 @@ class PlayPublishApkTask extends PlayPublishTask {
         if (extension.untrackOld && !"alpha".equals(extension.track)) {
             def untrackChannels = "beta".equals(extension.track) ? ["alpha"] : ["alpha", "beta"]
             untrackChannels.each { channel ->
-                Track track = edits.tracks().get(variant.applicationId, editId, channel).execute()
-                track.setVersionCodes(track.getVersionCodes().findAll {
-                    it > apk.getVersionCode()
-                });
+                try {
+                    Track track = edits.tracks().get(variant.applicationId, editId, channel).execute()
+                    track.setVersionCodes(track.getVersionCodes().findAll {
+                        it > apk.getVersionCode()
+                    });
 
-                edits.tracks().update(variant.applicationId, editId, channel, track).execute()
+                    edits.tracks().update(variant.applicationId, editId, channel, track).execute()
+                } catch (GoogleJsonResponseException e) {
+                    // Just skip if there is no version in track
+                    if (e.details.getCode() != 404) {
+                        throw e;
+                    }
+                }
             }
         }
 
