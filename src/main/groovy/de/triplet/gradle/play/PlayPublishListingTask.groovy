@@ -57,7 +57,7 @@ class PlayPublishListingTask extends PlayPublishTask {
                 def title = TaskHelper.readAndTrimFile(fileTitle, MAX_CHARACTER_LENGTH_FOR_TITLE, extension.errorOnSizeLimit)
                 def shortDescription = TaskHelper.readAndTrimFile(fileShortDescription, MAX_CHARACTER_LENGTH_FOR_SHORT_DESCRIPTION, extension.errorOnSizeLimit)
                 def fullDescription = TaskHelper.readAndTrimFile(fileFullDescription, MAX_CHARACTER_LENGTH_FOR_FULL_DESCRIPTION, extension.errorOnSizeLimit)
-                def video = TaskHelper.readSingleLine(fileVideo)
+                def video = TaskHelper.readAndTrimFile(fileVideo, Integer.MAX_VALUE, extension.errorOnSizeLimit)
 
                 final Listing listing = new Listing()
                 if (StringUtils.isNotEmpty(title)) {

@@ -92,9 +92,47 @@ class PlayPublishApkTask extends PlayPublishTask {
                             .execute()
                 }
             }
+
         }
 
-        return apk
+        if (extension.obbMain != null && extension.obbMain.exists()) {
+            publishObb("main", extension.obbMain)
+        } else if (extension.associateObbMain > 0) {
+            associateObb("main", extension.associateObbMain)
+        }
+
+        if (extension.uploadObbPatch) {
+            publishObb("patch", extension.obbPatchPath)
+        } else if (extension.associateObbPatch > 0) {
+            associateObb("patch", extension.associateObbPatch)
+        }
+
+        edits.commit(variant.applicationId, editId).execute()
+    }
+
+    private void publishObb(String type, obbFile) {
+
+        if (obbFile != null && obbFile.exists()) {
+            def newObbFile = new FileContent("application/octet-stream", obbFile)
+
+            edits.expansionfiles()
+                    .upload(variant.applicationId, editId, variant.versionCode, type, newObbFile)
+                    .execute()
+
+            logger.info("Starting upload of the obb file ({} MB), this may take a while",
+                    obbFile.length() / 1024 / 1024)
+
+        } else {
+            throw new GradleException("Please place a file named `${type}` in the `play/obb/` directory")
+        }
+    }
+
+    private void associateObb(String type, int version) {
+        ExpansionFile content = new ExpansionFile()
+        content.setReferencesVersion(version)
+        edits.expansionfiles()
+                .update(variant.applicationId, editId, variant.versionCode, type, content)
+                .execute()
     }
 
 }

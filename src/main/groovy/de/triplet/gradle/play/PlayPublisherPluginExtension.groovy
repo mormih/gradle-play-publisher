@@ -8,11 +8,11 @@ class PlayPublisherPluginExtension {
 
     File jsonFile
 
+    File obbMain
+
+    File obbPatch
+
     boolean uploadImages = false
-
-    boolean uploadObbMain = false
-
-    boolean uploadObbPatch = false
 
     int associateObbMain = -1
 
